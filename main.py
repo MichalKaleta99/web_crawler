@@ -1,53 +1,35 @@
 import wikipedia
-wikipedia.set_lang('pl')
 
-crossword_levels=10
+main_page = wikipedia.WikipediaPage('Online chat')
+see_also= main_page.section("See also")
 
-def check_validity(word):
-    for char in word:
-        ascii_char = ord(char)
-        if (ascii_char<65 or ascii_char>122):
-            return False
-    return True
 
-def check_len(word):
-    if len(word)>crossword_levels:
-        return False
-    return True
+list_of_new_lines = [-1]
+see_alsos_deep=[]
+checked_yet=[]
 
-def choose_first_word():
-    headword = wikipedia.random(1)
-    while not check_validity(headword):
-        headword = wikipedia.random(1)
-        print('headword - '+headword)
-    if check_len(headword):
-        return headword
-    else:
-        choose_first_word()
 
-def find_next_word(char):
-    word = wikipedia.random(1)
-    while not check_validity(word):
-        word = wikipedia.random(1)
-    if (char.lower() or char.upper()) in word:
-        return word
-    else:
-        return None
-def define_index(word, char):
-    if char.lower() in word:
-        char=char.lower()
-    if char.upper() in word:
-        char=char.upper()
-    return word.index(char)
-def print_crossword(headword):
-    for char in headword:
-        word = find_next_word(char)
-        while word==None:
-            word = find_next_word(char)
-        char_index = define_index(word, char)
-        print('Słowo - '+word)
-        print('_ '*char_index+char+' '+'_ '*(len(word)-1-char_index))
+def countSeeMores():
+    for pos,char in enumerate(see_also):
+        if(char == '\n'):
+            list_of_new_lines.append(pos)
 
-if __name__ == "__main__":
-    headword = choose_first_word()
-    print_crossword(headword)
+
+
+def seeAlsosDeep(list_of_new_lines):
+    for x in range(len(list_of_new_lines)-1):
+        see_alsos_deep.append(see_also[list_of_new_lines[x]+1:list_of_new_lines[x+1]])
+    see_alsos_deep.append(see_also[list_of_new_lines[x+1]+1:])
+
+    for x in see_alsos_deep:
+        checked_yet.append(x)
+        print("see alsos dla :"+x)
+        see_also_main_page=wikipedia.WikipediaPage(x)
+        test=see_also_main_page.section("See also")
+        checked_yet.append(test)
+        print(checked_yet)
+        print(len(checked_yet))
+
+
+countSeeMores()
+seeAlsosDeep(list_of_new_lines)
